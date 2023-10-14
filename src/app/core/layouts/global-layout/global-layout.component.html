@@ -6,7 +6,7 @@
     <img [routerLink]="['/tools']" style="width: 80px;" src="/assets/img/logo.png">
     <!--  <span>Signal Speak</span>-->
     <span class="spacer"></span>
-    <ng-container *ngIf="true; then unaothorized; else authorized">
+    <ng-container *ngIf="!isLoggedIn; then unaothorized; else authorized">
     </ng-container>
   </mat-toolbar>
 </header>
@@ -35,8 +35,7 @@
   </div>
 </ng-template>
 <ng-template #authorized>
-  <div style="display: flex;">
-    <button mat-button>Iniciar Sesión</button>
-    <button mat-button>Registrate</button>
+  <div style="display: flex; width: 350px; gap:5px;">
+    <button (click)="logOut()" style="flex: 1 1 0px;" mat-stroked-button>Cerrar Sesión</button>
   </div>
 </ng-template>

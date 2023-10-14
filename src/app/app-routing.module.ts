@@ -10,7 +10,7 @@ const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: '/tools/sign-language-to-text'
+        redirectTo: 'tools'
       },
       {
         path: 'auth',

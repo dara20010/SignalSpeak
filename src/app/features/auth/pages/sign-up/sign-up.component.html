@@ -5,7 +5,7 @@
 
 <mat-card style="max-width: 500px;">
   <mat-card-content>
-    <app-sign-up-form></app-sign-up-form>
+    <app-sign-up-form (onSubmit)="signUp($event.email, $event.password)"></app-sign-up-form>
     <mat-divider style="margin-top: 30px;"></mat-divider>
     <div style="padding: 30px; display: flex; justify-content: center; align-items: center">
       <span>¿Ya tienes una cuenta?  <a style="margin-left:10px;" [routerLink]="['/auth/sign-in']"><mat-chip color="primary" highlighted>Iniciar Sesión</mat-chip></a></span>
