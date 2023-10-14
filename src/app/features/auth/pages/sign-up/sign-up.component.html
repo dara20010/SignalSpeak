@@ -1,0 +1,14 @@
+
+<div style="margin: 60px 0;">
+  <h2 style="font-size: 3rem; margin: 0 auto; font-weight: bolder">Crea tu Cuenta</h2>
+</div>
+
+<mat-card style="max-width: 500px;">
+  <mat-card-content>
+    <app-sign-up-form></app-sign-up-form>
+    <mat-divider style="margin-top: 30px;"></mat-divider>
+    <div style="padding: 30px; display: flex; justify-content: center; align-items: center">
+      <span>¿Ya tienes una cuenta?  <a style="margin-left:10px;" [routerLink]="['/auth/sign-in']"><mat-chip color="primary" highlighted>Iniciar Sesión</mat-chip></a></span>
+    </div>
+  </mat-card-content>
+</mat-card>

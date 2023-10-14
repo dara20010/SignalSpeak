@@ -1,0 +1,45 @@
+<div style="margin-bottom: 40px;">
+  <h2 style="font-size: 2rem; margin: 0 auto; font-weight: bolder">
+    Traductor de Lenguaje de Señas Peruano (LSP) a Texto
+  </h2>
+</div>
+
+<mat-card style="max-width: 640px;">
+  <mat-card-content style="position: relative;">
+    <div style="position: relative">
+      <video autoplay id="vid" width="640" height="480"></video>
+      <canvas #canvas style="position: absolute; top: 0; left: 0;" width="640" height="480"></canvas>
+
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+<mat-divider style="margin: 20px 0;"></mat-divider>
+
+<mat-card style="max-width: 640px; height: 300px;">
+  <mat-card-header>
+    <mat-card-subtitle>Español</mat-card-subtitle>
+    <mat-card-title>Texto</mat-card-title>
+  </mat-card-header>
+  <mat-card-content style="height: 400px; background-color: azure; padding-top: 40px;">
+    <ng-container *ngIf="output; then translation; else placeholder">
+
+    </ng-container>
+    <ng-template #translation>
+      <p style="color: #363062">
+        {{ output }}
+      </p>
+    </ng-template>
+    <ng-template #placeholder>
+      <p style="color: #363062">
+        Empieza a realizar gestos...
+      </p>
+    </ng-template>
+
+  </mat-card-content>
+  <mat-card-actions style="display: flex; gap: 5px;">
+    <button (click)="clear()" style="flex: 1 1 0px" mat-stroked-button>Reiniciar</button>
+    <button style="flex: 1 1 0px" mat-stroked-button>Copiar</button>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,36 @@
+<form [formGroup]="form" (ngSubmit)="submit()" style="display: flex; flex-direction: column; gap: 10px;">
+  <mat-form-field>
+    <mat-label>Ingresa tu nombre</mat-label>
+    <input type="text" matInput formControlName="name">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Ingresa tu correo</mat-label>
+    <input type="text" matInput formControlName="email">
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Ingresa tu contraseña</mat-label>
+    <input matInput formControlName="password" [type]="hide ? 'password' : 'text'">
+    <button
+      mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+      <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </button>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-label>Confirma tu contraseña</mat-label>
+    <input matInput formControlName="rePassword" [type]="hide ? 'password' : 'text'">
+    <button
+      mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+      <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <p *ngIf="error" class="error">
+    {{ error }}
+  </p>
+
+  <button
+    style="padding: 25px 0; font-size: 18px;
+    line-height: 18px;" mat-raised-button color="primary" type="submit" mat-button>Regístrate
+  </button>
+
+</form>

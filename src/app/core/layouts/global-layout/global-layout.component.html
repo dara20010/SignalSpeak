@@ -1,0 +1,42 @@
+<header>
+  <mat-toolbar style="height: 100px">
+    <!--  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">-->
+    <!--    <mat-icon>menu</mat-icon>-->
+    <!--  </button>-->
+    <img [routerLink]="['/tools']" style="width: 80px;" src="/assets/img/logo.png">
+    <!--  <span>Signal Speak</span>-->
+    <span class="spacer"></span>
+    <ng-container *ngIf="true; then unaothorized; else authorized">
+    </ng-container>
+  </mat-toolbar>
+</header>
+
+<main>
+  <div class="inner-content">
+    <router-outlet></router-outlet>
+  </div>
+</main>
+
+<footer>
+  <mat-toolbar color="primary"
+               style="display:flex;
+               justify-content: center;
+               align-items: center;
+               height: 100px;
+">
+    <span style="font-size: 1rem;">@Signal Speak</span>
+  </mat-toolbar>
+</footer>
+
+<ng-template #unaothorized>
+  <div style="display: flex; width: 350px; gap:5px;">
+    <button [routerLink]="['/auth/sign-in']" routerLinkActive #rla="routerLinkActive" [disabled]="rla.isActive" style="flex: 1 1 0px;" mat-stroked-button>Iniciar Sesión</button>
+    <button [routerLink]="['/auth/sign-up']" routerLinkActive #rlau="routerLinkActive" [disabled]="rlau.isActive" style="flex: 1 1 0px;" mat-raised-button color="primary">Registrate</button>
+  </div>
+</ng-template>
+<ng-template #authorized>
+  <div style="display: flex;">
+    <button mat-button>Iniciar Sesión</button>
+    <button mat-button>Registrate</button>
+  </div>
+</ng-template>
