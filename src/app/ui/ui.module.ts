@@ -119,7 +119,7 @@ import {MatTableModule} from '@angular/material/table';
     MatPaginatorModule,
     MatSortModule,
     MatTableModule,
-    MatToolbarModule
+    MatToolbarModule,
   ]
 })
 export class UiModule {

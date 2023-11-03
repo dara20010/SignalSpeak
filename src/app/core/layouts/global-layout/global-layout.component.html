@@ -11,22 +11,23 @@
   </mat-toolbar>
 </header>
 
-<main>
-  <div class="inner-content">
+<main class="">
+  <div class="inner-content m-0 md:m-6">
     <router-outlet></router-outlet>
   </div>
-</main>
-
-<footer>
-  <mat-toolbar color="primary"
-               style="display:flex;
+  <footer>
+    <mat-toolbar color="primary"
+                 style="display:flex;
                justify-content: center;
                align-items: center;
                height: 100px;
 ">
-    <span style="font-size: 1rem;">@Signal Speak</span>
-  </mat-toolbar>
-</footer>
+      <span style="font-size: 1rem;">@Signal Speak</span>
+    </mat-toolbar>
+  </footer>
+</main>
+
+
 
 <ng-template #unaothorized>
   <div style="display: flex; width: 350px; gap:5px;">

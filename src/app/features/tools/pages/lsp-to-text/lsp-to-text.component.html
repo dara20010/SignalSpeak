@@ -1,45 +1,62 @@
-<div style="margin-bottom: 40px;">
-  <h2 style="font-size: 2rem; margin: 0 auto; font-weight: bolder">
-    Traductor de Lenguaje de Señas Peruano (LSP) a Texto
-  </h2>
-</div>
 
-<mat-card style="max-width: 640px;">
-  <mat-card-content style="position: relative;">
-    <div style="position: relative">
-      <video autoplay id="vid" width="640" height="480"></video>
-      <canvas #canvas style="position: absolute; top: 0; left: 0;" width="640" height="480"></canvas>
-
+<mat-card style="max-width: 1500px" class="overflow-hidden">
+  <mat-card-header style="padding: 0; padding-bottom: 10px;">
+    <div class="w-full">
+      <mat-toolbar color="primary" class="max-w-full">
+        <mat-toolbar-row class="flex justify-content-center flex-wrap">
+          <span>Traductor de LSP a Texto</span>
+        </mat-toolbar-row>
+      </mat-toolbar>
+      <mat-toolbar color="secondary" class="max-w-full">
+        <mat-toolbar-row class="flex justify-content-between">
+          <button mat-raised-button (click)="openAlphabetDialog()">
+            Mostrar Alfabeto
+          </button>
+          <button [routerLink]="['/tools/text-to-lsp']" mat-raised-button color="accent">
+            Texto -> LSP
+          </button>
+        </mat-toolbar-row>
+      </mat-toolbar>
     </div>
-
-  </mat-card-content>
-</mat-card>
-
-<mat-divider style="margin: 20px 0;"></mat-divider>
-
-<mat-card style="max-width: 640px; height: 300px;">
-  <mat-card-header>
-    <mat-card-subtitle>Español</mat-card-subtitle>
-    <mat-card-title>Texto</mat-card-title>
   </mat-card-header>
-  <mat-card-content style="height: 400px; background-color: azure; padding-top: 40px;">
-    <ng-container *ngIf="output; then translation; else placeholder">
+  <mat-card-content class="flex lg:flex-row flex-column gap-2" style="">
+    <mat-card class="flex-1">
+      <mat-card-content style="position: relative;">
+        <div style="position: relative">
+          <video autoplay id="vid" class="bg-cover h-full w-full" width="640" height="480"></video>
+          <canvas #canvas class="h-full w-full" style="position: absolute; top: 0; left: 0;" width="640" height="480"></canvas>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-    </ng-container>
-    <ng-template #translation>
-      <p style="color: #363062">
-        {{ output }}
-      </p>
-    </ng-template>
-    <ng-template #placeholder>
-      <p style="color: #363062">
-        Empieza a realizar gestos...
-      </p>
-    </ng-template>
+<!--
+    <mat-divider style="margin: 20px 0;"></mat-divider>
+-->
+    <mat-card class="flex-1 h-full flex-column" style="min-height: 250px;">
+      <mat-card-header>
+        <mat-card-subtitle>Español</mat-card-subtitle>
+        <mat-card-title>Texto</mat-card-title>
+      </mat-card-header>
+      <mat-card-content style="background-color: azure; padding-top: 40px;" class="flex-1">
+        <ng-container *ngIf="output; then translation; else placeholder">
+        </ng-container>
+        <ng-template #translation>
+          <p style="color: #363062">
+            {{ output }}
+          </p>
+        </ng-template>
+        <ng-template #placeholder>
+          <p style="color: #363062">
+            Empieza a realizar gestos...
+          </p>
+        </ng-template>
 
+      </mat-card-content>
+      <mat-card-actions style="display: flex; gap: 5px;">
+        <button (click)="clear()" style="flex: 1 1 0px" mat-stroked-button>Reiniciar</button>
+        <button style="flex: 1 1 0px" mat-stroked-button>Copiar</button>
+      </mat-card-actions>
+    </mat-card>
   </mat-card-content>
-  <mat-card-actions style="display: flex; gap: 5px;">
-    <button (click)="clear()" style="flex: 1 1 0px" mat-stroked-button>Reiniciar</button>
-    <button style="flex: 1 1 0px" mat-stroked-button>Copiar</button>
-  </mat-card-actions>
 </mat-card>
+

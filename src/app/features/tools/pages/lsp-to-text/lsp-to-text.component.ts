@@ -3,6 +3,8 @@ import * as tf from '@tensorflow/tfjs';
 import {LayersModel} from "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/hand-pose-detection";
 import {HandDetector} from "@tensorflow-models/hand-pose-detection";
+import {MatDialog} from "@angular/material/dialog";
+import {AlphabetComponent} from "../../../../shared/components/alphabet/alphabet.component";
 
 
 @Component({
@@ -19,7 +21,9 @@ export class LspToTextComponent implements OnInit, AfterViewInit {
   output: string = '';
   currentHandFrame: tf.Tensor3D | null = null;
 
-  constructor() {
+  constructor(
+    public dialog: MatDialog
+  ) {
 
   }
 
@@ -29,6 +33,10 @@ export class LspToTextComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+  }
+
+  openAlphabetDialog() {
+    const dialogRef = this.dialog.open(AlphabetComponent);
   }
 
   async drawHand(ctx: CanvasRenderingContext2D, handLandmarks: handpose.Keypoint[]) {

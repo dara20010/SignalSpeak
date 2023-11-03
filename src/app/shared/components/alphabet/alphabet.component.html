@@ -1,0 +1,22 @@
+<mat-toolbar mat-dialog-title color="secondary" class="flex">
+  <button [mat-dialog-close]="true" mat-raised-button color="warn">Cerrar</button>
+  <span class="flex flex-1"></span>
+  <h3>Alfabeto (LSP)</h3>
+</mat-toolbar>
+<mat-dialog-content class="mat-typography">
+  <div class="grid">
+    <div *ngFor="let letter of letters" class="col-6 md:col-3 lg:col-2">
+      <mat-card class="overflow-hidden">
+        <mat-card-header style="padding: 0; padding-bottom: 10px;">
+          <mat-toolbar class="flex justify-content-center text-3xl">
+              {{ letter.char }}
+          </mat-toolbar>
+        </mat-card-header>
+        <mat-card-content class="flex justify-content-center">
+          <img [src]="letter.sign" alt="">
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</mat-dialog-content>
+
