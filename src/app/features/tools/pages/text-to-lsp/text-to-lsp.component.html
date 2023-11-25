@@ -7,10 +7,17 @@
         </mat-toolbar-row>
       </mat-toolbar>
       <mat-toolbar color="secondary" class="max-w-full">
-        <mat-toolbar-row class="flex justify-content-between">
-          <button mat-raised-button (click)="openAlphabetDialog()">
-            Mostrar Alfabeto
-          </button>
+        <mat-toolbar-row class="flex justify-content-between align-items-center">
+          <div class="flex align-items-center gap-2">
+            <button mat-raised-button (click)="openAlphabetDialog()">
+              Mostrar Alfabeto
+            </button>
+            <button
+              mat-mini-fab color="primary" aria-label="Example icon button with a bookmark icon"
+              (click)="openHistoryDialog()">
+              <mat-icon>history</mat-icon>
+            </button>
+          </div>
           <button [routerLink]="['/tools/lsp-to-text']" mat-raised-button color="accent">
             LSP -> Texto
           </button>
@@ -18,51 +25,79 @@
       </mat-toolbar>
     </div>
   </mat-card-header>
-  <mat-card-content class="flex lg:flex-column flex-column gap-2" style="height: 600px">
-    <mat-card class="flex-1">
-      <mat-card-content style="position: relative;" class="flex-1">
-        <div style="position: relative;" class="h-full">
-          <mat-form-field class="w-full h-full">
-            <mat-label>Texto a traducir</mat-label>
-            <textarea
-              matInput [(ngModel)]="textToTranslate" [ngModelOptions]="{ standalone: true }"
-              [cdkTextareaAutosize]="true"
-              [cdkAutosizeMinRows]="4"
-              [cdkAutosizeMaxRows]="12"
-              placeholder="Ej. Buenos días..."></textarea>
-          </mat-form-field>
+  <mat-card-content class="flex flex-column md:flex-row gap-2" style="height: 800px">
+    <div class="flex-1 flex flex-column gap-2">
+      <mat-card class="flex-initial">
+        <mat-card-content style="position: relative;" class="flex-1">
+          <div style="position: relative;" class="h-full">
+            <mat-form-field class="w-full h-full">
+              <mat-label>Texto a traducir</mat-label>
+              <textarea
+                matInput [(ngModel)]="textToTranslate" [ngModelOptions]="{ standalone: true }"
+                [cdkTextareaAutosize]="true"
+                [cdkAutosizeMinRows]="4"
+                [cdkAutosizeMaxRows]="12"
+                placeholder="Ej. Buenos días..."></textarea>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="flex-1 overflow-auto">
+        <mat-card-content class="flex flex-1 overflow-scroll" style="background-color: azure; padding-top: 40px;">
+          <div class="flex-1 overflow-scroll">
+            <ng-container *ngIf="output; then translation; else placeholder">
+            </ng-container>
+
+          </div>
+
+          <ng-template #translation>
+            <div class="grid gap-2">
+              <div *ngFor="let word of words; let i = index" class="col-auto">
+                <mat-card class="overflow-hidden">
+                  <mat-card-header class="bg-purple-200" style="padding: 0;">
+                    <div class=" p-3 text-xl">
+                      {{ word.getWord }}
+                    </div>
+                  </mat-card-header>
+                  <mat-card-content class="flex justify-content-center max-h-7rem p-0">
+
+                    <div *ngFor="let letter of output[i]" class="w-4rem md:w-5rem relative p-1 gap-2">
+                      <img [src]="letter.sign" alt="" class="w-full h-full">
+                      <div
+                        *ngIf="letter.correct" class="absolute top-0 left-0 w-full h-full bg-green-700 opacity-40 z-4">
+                      </div>
+                      <div
+                        *ngIf="letter.selected"
+                        class="absolute top-0 left-0 w-full h-full bg-orange-700 opacity-40 z-4">
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              </div>
+            </div>
+          </ng-template>
+          <ng-template #placeholder>
+            <p style="color: #363062">
+              Ingresa tu texto a traducir y presiona el botón...
+            </p>
+          </ng-template>
+        </mat-card-content>
+        <mat-card-actions style="display: flex; gap: 5px;" class="justify-content-center">
+          <button (click)="translate()" style="min-width: 300px" mat-raised-button color="primary">Traducir</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+    <mat-card class="flex-1 flex flex-column">
+      <mat-card-header>
+        <mat-card-title>Desafío</mat-card-title>
+        <mat-card-subtitle>Empice a realizar gestos...</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content style="position: relative;">
+        <app-cam-detector (onCharDetected)="charDetectedHandler($event)"></app-cam-detector>
+        <div class="flex-1">
+          <!--asdasdasd-->
         </div>
       </mat-card-content>
-    </mat-card>
-    <mat-card class="flex-1 overflow-auto">
-      <mat-card-content class="flex-1 overflow-scroll" style="background-color: azure; padding-top: 40px;">
-        <ng-container *ngIf="output; then translation; else placeholder">
-        </ng-container>
-        <ng-template #translation>
-          <div class="grid">
-            <div *ngFor="let word of words" class="col-12 md:col-6 lg:col-4 xl:col-3">
-              <mat-card class="overflow-hidden">
-                <mat-card-header style="padding: 0; padding-bottom: 10px;">
-                  <mat-toolbar class="flex justify-content-center text-3xl">
-                    {{ word.getWord }}
-                  </mat-toolbar>
-                </mat-card-header>
-                <mat-card-content class="flex justify-content-center max-h-7rem p-0">
-                  <img *ngFor="let letter of word.getData" [src]="letter.sign" alt="">
-                </mat-card-content>
-              </mat-card>
-            </div>
-          </div>
-        </ng-template>
-        <ng-template #placeholder>
-          <p style="color: #363062">
-            Ingresa tu texto a traducir y presiona el botón...
-          </p>
-        </ng-template>
-      </mat-card-content>
-      <mat-card-actions style="display: flex; gap: 5px;" class="justify-content-center">
-        <button (click)="translate()" style="min-width: 300px" mat-raised-button color="primary">Traducir</button>
-      </mat-card-actions>
     </mat-card>
   </mat-card-content>
 </mat-card>

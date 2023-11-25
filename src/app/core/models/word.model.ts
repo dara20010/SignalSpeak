@@ -38,7 +38,7 @@ export class Word {
     let imagePath = ``;
 
     if (alphabet.includes(letter.toLowerCase())) {
-      return imagePath = `/assets/asl/${letter.toLowerCase()}.png`;
+      return imagePath = `/assets/lsp/${letter.toLowerCase()}.png`;
     }
     return imagePath = `/assets/asl/default.png`;
 

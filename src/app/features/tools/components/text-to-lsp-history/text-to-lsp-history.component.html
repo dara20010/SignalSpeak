@@ -1,0 +1,52 @@
+<mat-toolbar mat-dialog-title color="secondary" class="flex">
+  <button [mat-dialog-close]="true" mat-raised-button color="warn">Cerrar</button>
+  <span class="flex flex-1"></span>
+  <h3>Historial (Texto -> LSP)</h3>
+</mat-toolbar>
+<mat-dialog-content class="mat-typography max-h-30rem">
+  <table mat-table [dataSource]="data.history" class="mat-elevation-z8 demo-table mt-4">
+
+    <ng-container matColumnDef="index">
+      <th mat-header-cell *matHeaderCellDef>Index</th>
+      <td mat-cell *matCellDef="let element; let i = index">{{i + 1}}</td>
+    </ng-container>
+    <!-- Position Column -->
+    <ng-container matColumnDef="text">
+      <th mat-header-cell *matHeaderCellDef>Texto</th>
+      <td mat-cell *matCellDef="let element">{{element.text}}</td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="timestamp">
+      <th mat-header-cell *matHeaderCellDef>Fecha y Hora</th>
+      <td mat-cell *matCellDef="let element">{{ element.timestamp | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="delete">
+      <th mat-header-cell *matHeaderCellDef>Eliminar</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button color="warn" (click)="deleteHistoryRecord(element)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="translate">
+      <th mat-header-cell *matHeaderCellDef>Traducir</th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button color="primary" (click)="clickHistoryRecord(element)">
+          <mat-icon>Traducir</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      class="cursor-pointer hover:bg-purple-50"
+      *matRowDef="let row; columns: displayedColumns;"
+    ></tr>
+  </table>
+</mat-dialog-content>
+

@@ -10,12 +10,16 @@ import {TextToLspComponent} from './pages/text-to-lsp/text-to-lsp.component';
 import {UiModule} from "../../ui/ui.module";
 import {SharedModule} from "../../shared/shared.module";
 import {FormsModule} from "@angular/forms";
+import { TextToLspHistoryComponent } from './components/text-to-lsp-history/text-to-lsp-history.component';
+import { CamDetectorComponent } from './components/cam-detector/cam-detector.component';
 
 
 @NgModule({
   declarations: [
     LspToTextComponent,
-    TextToLspComponent
+    TextToLspComponent,
+    TextToLspHistoryComponent,
+    CamDetectorComponent
   ],
     imports: [
         CommonModule,

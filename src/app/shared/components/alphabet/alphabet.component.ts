@@ -10,10 +10,10 @@ export class AlphabetComponent {
   letters: Letter[];
   constructor() {
     const aslImages: Letter[] = [];
-    const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+    const alphabet = 'abcdefghiklmnopqrstuvwxy';
 
     for (let letter of alphabet) {
-      const imagePath = `/assets/asl/${letter}.png`;
+      const imagePath = `/assets/lsp/${letter}.png`;
       aslImages.push({char: letter.toUpperCase(), sign: imagePath});
     }
 

@@ -22,10 +22,11 @@
   <mat-card-content class="flex lg:flex-row flex-column gap-2" style="">
     <mat-card class="flex-1">
       <mat-card-content style="position: relative;">
-        <div style="position: relative">
+        <!--<div style="position: relative">
           <video autoplay id="vid" class="bg-cover h-full w-full" width="640" height="480"></video>
           <canvas #canvas class="h-full w-full" style="position: absolute; top: 0; left: 0;" width="640" height="480"></canvas>
-        </div>
+        </div>-->
+        <app-cam-detector (onCharDetected)="charDetectedHandler($event)"></app-cam-detector>
       </mat-card-content>
     </mat-card>
 

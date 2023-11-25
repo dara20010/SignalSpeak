@@ -10,6 +10,8 @@ import {ReactiveFormsModule} from "@angular/forms";
 import { AuthService } from './core/services/auth.service';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import {AngularFireAuth, AngularFireAuthModule} from "@angular/fire/compat/auth";
+import {AngularFireModule} from "@angular/fire/compat";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -33,10 +35,12 @@ const firebaseConfig = {
     RouterModule,
     CoreModule,
     ReactiveFormsModule,
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideAuth(() => getAuth())
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireAuthModule,
+   /* provideFirebaseApp(() => initializeApp(firebaseConfig)),
+    provideAuth(() => getAuth())*/
   ],
-  providers: [AuthService],
+  providers: [AuthService, AngularFireAuth],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
