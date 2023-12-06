@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {HandDetector} from "@tensorflow-models/hand-pose-detection";
-import {LayersModel} from "@tensorflow/tfjs";
+import {GraphModel, LayersModel} from "@tensorflow/tfjs";
 import * as tf from "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/hand-pose-detection";
 
@@ -9,7 +9,7 @@ import * as handpose from "@tensorflow-models/hand-pose-detection";
   templateUrl: './cam-detector.component.html',
   styleUrls: ['./cam-detector.component.css']
 })
-export class CamDetectorComponent implements OnInit, OnDestroy{
+export class CamDetectorComponent implements OnInit, OnDestroy {
   @Output() onCharDetected = new EventEmitter();
   @ViewChild('canvas', {static: true}) canvasRef!: ElementRef<HTMLCanvasElement>;
 
@@ -18,14 +18,20 @@ export class CamDetectorComponent implements OnInit, OnDestroy{
 
   video!: HTMLVideoElement;
   handModel!: HandDetector;
-  model!: LayersModel;
+  model!: LayersModel | GraphModel;
   currentHandFrame: tf.Tensor3D | null = null;
   private intervalId?: number;
+
+  constructor(private elementRef: ElementRef) {
+
+  }
+
 
   ngOnInit(): void {
     this.webcam_init();
     this.loadModel();
   }
+
   async drawHand(ctx: CanvasRenderingContext2D, handLandmarks: handpose.Keypoint[]) {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
@@ -49,6 +55,7 @@ export class CamDetectorComponent implements OnInit, OnDestroy{
 
   webcam_init() {
     this.video = document.getElementById('vid') as HTMLVideoElement;
+    console.info('[INITIALIZING CAMERA]', this.video)
     navigator.mediaDevices
       .getUserMedia({
         audio: false,
@@ -69,13 +76,16 @@ export class CamDetectorComponent implements OnInit, OnDestroy{
             this.detectHandFrame();
             this.currentHandFrame = null;
             // @ts-ignore
-          }, 1000);
+          }, 500);
         }
       })
   }
 
   async loadModel() {
-    this.model = await tf.loadLayersModel('/assets/model/model.json');
+    /*this.model = await tf.loadLayersModel('/assets/model/lsp_model/model.json');*/
+    this.model = await tf.loadGraphModel('assets/lsp_saved/model.json')
+
+    /*this.model = await tf.loadLayersModel('/assets/model/model.json');*/
     const model = handpose.SupportedModels.MediaPipeHands;
     const detectorConfig = {
       runtime: 'mediapipe', // or 'tfjs',
@@ -107,14 +117,27 @@ export class CamDetectorComponent implements OnInit, OnDestroy{
           (maxY + 80) / this.video.height,
           (maxX + 80) / this.video.width
         ];
-        // @ts-ignore
-        this.currentHandFrame = tf.image.cropAndResize(
+        //check if model is of type tf.LayersModel
+        if (this.model instanceof tf.LayersModel) {
           // @ts-ignore
-          inputData.expandDims(),
-          [normalizedCoords],
-          [0],
-          [64, 64]
-        ).reshape([1, 64, 64, 3]);
+          this.currentHandFrame = tf.image.cropAndResize(
+            // @ts-ignore
+            inputData.expandDims(),
+            [normalizedCoords],
+            [0],
+            [64, 64]
+          ).reshape([1, 64, 64, 3]);
+        } else {
+          //For the GraphModel only
+          // @ts-ignore
+          this.currentHandFrame = tf.image.cropAndResize(
+            // @ts-ignore
+            inputData.expandDims(),
+            [normalizedCoords],
+            [0],
+            [224, 224] // Change this line
+          ).reshape([1, 224, 224, 3]); // And this line
+        }
       } else {
         console.log('No se detectó la mano en el frame actual.');
       }
@@ -123,8 +146,46 @@ export class CamDetectorComponent implements OnInit, OnDestroy{
     }
   }
 
+  async showTensorAsImage(tensor: tf.Tensor4D) {
+    // Normalize the tensor values to be within the range [0, 1]
+    const normalizedTensor = tensor.div(tf.scalar(255.0));
+
+    // Create a canvas element
+    const canvas = document.createElement('canvas');
+    // @ts-ignore
+    canvas.width = normalizedTensor.shape[1];
+    // @ts-ignore
+    canvas.height = normalizedTensor.shape[2];
+
+    // Draw the normalized tensor values as pixel colors onto the canvas
+    // @ts-ignore
+    await tf.browser.toPixels(normalizedTensor.squeeze(), canvas);
+
+    // Append the canvas to the body of the document
+    document.body.appendChild(canvas);
+  }
+
+
+
   detectHandFrame() {
     if (this.currentHandFrame) {
+      // show current frame
+      console.log(this.currentHandFrame)
+/*
+      this.currentHandFrame.print()
+*/
+      // Call the function with your tensor
+      const tensor = tf.tensor4d([
+        [
+          [
+            [92.3592453, 84.3592453, 93.3822556],
+            [93.3175278, 85.3175278, 94.6350632],
+            // ... rest of your tensor values
+          ]
+        ]
+      ]);
+      //this.showTensorAsImage(tensor);
+
       const prediction = this.model.predict(this.currentHandFrame);
 
       const characters = [
@@ -154,7 +215,14 @@ export class CamDetectorComponent implements OnInit, OnDestroy{
       console.log('No hay frame de la mano para procesar.');
     }
   }
+
   ngOnDestroy() {
+
+    this.elementRef.nativeElement.remove();
+    console.log('[DESTROYING CAMERA]')
+
+
+
     if (this.intervalId !== undefined) {
       window.clearInterval(this.intervalId);
     }
