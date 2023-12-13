@@ -22,6 +22,12 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
   currentHandFrame: tf.Tensor3D | null = null;
   private intervalId?: number;
 
+
+  mockedWord: string = 'CASA';
+  mockedWordIndex: number = 0;
+  private intervalTime: number = 2000;
+
+
   constructor(private elementRef: ElementRef) {
 
   }
@@ -76,7 +82,7 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
             this.detectHandFrame();
             this.currentHandFrame = null;
             // @ts-ignore
-          }, 500);
+          }, this.intervalTime);
         }
       })
   }
@@ -146,27 +152,6 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
     }
   }
 
-  async showTensorAsImage(tensor: tf.Tensor4D) {
-    // Normalize the tensor values to be within the range [0, 1]
-    const normalizedTensor = tensor.div(tf.scalar(255.0));
-
-    // Create a canvas element
-    const canvas = document.createElement('canvas');
-    // @ts-ignore
-    canvas.width = normalizedTensor.shape[1];
-    // @ts-ignore
-    canvas.height = normalizedTensor.shape[2];
-
-    // Draw the normalized tensor values as pixel colors onto the canvas
-    // @ts-ignore
-    await tf.browser.toPixels(normalizedTensor.squeeze(), canvas);
-
-    // Append the canvas to the body of the document
-    document.body.appendChild(canvas);
-  }
-
-
-
   detectHandFrame() {
     if (this.currentHandFrame) {
       // show current frame
@@ -200,7 +185,16 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
       console.log("Label predicho:", predictedLabel);
 
       console.log(prediction);
-      this.onCharDetected.emit(predictedLabel);
+
+      //emit the mockedWord chars one by one
+      if (this.mockedWordIndex < this.mockedWord.length) {
+        this.onCharDetected.emit(this.mockedWord[this.mockedWordIndex].toUpperCase());
+        this.mockedWordIndex++;
+      } else {
+        /*this.mockedWordIndex = 0;*/
+      }
+
+      //this.onCharDetected.emit(predictedLabel);
 
       //log the probabilities of the predictions
       // @ts-ignore
@@ -220,8 +214,6 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
 
     this.elementRef.nativeElement.remove();
     console.log('[DESTROYING CAMERA]')
-
-
 
     if (this.intervalId !== undefined) {
       window.clearInterval(this.intervalId);
