@@ -194,7 +194,7 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
       *for (let i = 0; i < probabilities.length; i++) {
         const label = characters[i] || `Clase ${i}`;
         console.log(`${label}: ${probabilities[i]}`);
-      }* /
+      }
     } else {
       console.log('No hay frame de la mano para procesar.');
     }
