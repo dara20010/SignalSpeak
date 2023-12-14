@@ -23,7 +23,7 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
   private intervalId?: number;
 
 
-  mockedWord: string = 'VIDA';
+  mockedWord: string = 'GATO';
   mockedWordIndex: number = 0;
   private intervalTime: number = 2000;
 
