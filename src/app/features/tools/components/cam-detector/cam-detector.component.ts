@@ -1,6 +1,6 @@
-import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
-import {HandDetector} from "@tensorflow-models/hand-pose-detection";
-import {GraphModel, LayersModel} from "@tensorflow/tfjs";
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { HandDetector } from "@tensorflow-models/hand-pose-detection";
+import { GraphModel, LayersModel } from "@tensorflow/tfjs";
 import * as tf from "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/hand-pose-detection";
 
@@ -11,7 +11,7 @@ import * as handpose from "@tensorflow-models/hand-pose-detection";
 })
 export class CamDetectorComponent implements OnInit, OnDestroy {
   @Output() onCharDetected = new EventEmitter();
-  @ViewChild('canvas', {static: true}) canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
   @Input() width: number = 640;
   @Input() height: number = 480;
@@ -22,9 +22,6 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
   currentHandFrame: tf.Tensor3D | null = null;
   private intervalId?: number;
 
-
-  mockedWord: string = 'HOLA';
-  mockedWordIndex: number = 0;
   private intervalTime: number = 2000;
 
 
@@ -156,9 +153,9 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
     if (this.currentHandFrame) {
       // show current frame
       console.log(this.currentHandFrame)
-/*
-      this.currentHandFrame.print()
-*/
+      /*
+            this.currentHandFrame.print()
+      */
       // Call the function with your tensor
       const tensor = tf.tensor4d([
         [
@@ -186,13 +183,6 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
 
       console.log(prediction);
 
-      //emit the mockedWord chars one by one
-      if (this.mockedWordIndex < this.mockedWord.length) {
-        this.onCharDetected.emit(this.mockedWord[this.mockedWordIndex].toUpperCase());
-        this.mockedWordIndex++;
-      } else {
-        /*this.mockedWordIndex = 0;*/
-      }
 
       //this.onCharDetected.emit(predictedLabel);
 
@@ -201,10 +191,10 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
       console.log(prediction.dataSync());
 
       //Imprime las probabilidades para cada clase
-      /*for (let i = 0; i < probabilities.length; i++) {
-         const label = characters[i] || `Clase ${i}`;
-         console.log(`${label}: ${probabilities[i]}`);
-       }*/
+      *for (let i = 0; i < probabilities.length; i++) {
+        const label = characters[i] || `Clase ${i}`;
+        console.log(`${label}: ${probabilities[i]}`);
+      }* /
     } else {
       console.log('No hay frame de la mano para procesar.');
     }
