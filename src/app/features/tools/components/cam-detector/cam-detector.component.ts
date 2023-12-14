@@ -191,7 +191,7 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
       console.log(prediction.dataSync());
 
       //Imprime las probabilidades para cada clase
-      *for (let i = 0; i < probabilities.length; i++) {
+      for (let i = 0; i < probabilities.length; i++) {
         const label = characters[i] || `Clase ${i}`;
         console.log(`${label}: ${probabilities[i]}`);
       }
