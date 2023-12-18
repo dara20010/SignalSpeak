@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {HandDetector} from "@tensorflow-models/hand-pose-detection";
-import {GraphModel, LayersModel} from "@tensorflow/tfjs";
+import {GraphModel, LayersModel, reshape} from "@tensorflow/tfjs";
 import * as tf from "@tensorflow/tfjs";
 import * as handpose from "@tensorflow-models/hand-pose-detection";
 
@@ -19,11 +19,11 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
   video!: HTMLVideoElement;
   handModel!: HandDetector;
   model!: LayersModel | GraphModel;
-  currentHandFrame: tf.Tensor3D | null = null;
+  currentHandFrame: any;
   private intervalId?: number;
 
 
-  private intervalTime: number = 2000;
+  private intervalTime: number = 1000;
 
 
   constructor(private elementRef: ElementRef) {
@@ -37,7 +37,9 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
   }
 
   async drawHand(ctx: CanvasRenderingContext2D, handLandmarks: handpose.Keypoint[]) {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+/*    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.clearRect(0, 50, ctx.canvas.width, (ctx.canvas.height - 50));
+    ctx.clearRect(50, 0, (ctx.canvas.width - 50), ctx.canvas.height );*/
 
     const minX = Math.min(...handLandmarks.map(point => point.x));
     const minY = Math.min(...handLandmarks.map(point => point.y));
@@ -47,14 +49,14 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
     ctx.fillStyle = 'red';
     for (const point of handLandmarks) {
       ctx.beginPath();
-      ctx.arc(point.x, point.y, 8, 0, 2 * Math.PI);
+      ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
       ctx.fill();
     }
 
     // Dibujar el rectángulo
-    ctx.strokeStyle = 'red';
+    /*ctx.strokeStyle = 'red';
     ctx.lineWidth = 2;
-    ctx.strokeRect(minX - 40, minY - 40, (maxX + 80) - minX, (maxY + 80) - minY);
+    ctx.strokeRect(minX - 10, minY - 10, (maxX + 16) - minX, (maxY + 16) - minY);*/
   }
 
   webcam_init() {
@@ -77,7 +79,8 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
           this.intervalId = window.setInterval(() => {
             // @ts-ignore
             this.captureHandFrame(ctx);
-            this.detectHandFrame();
+            // @ts-ignore
+            this.detectHandFrame(ctx);
             this.currentHandFrame = null;
             // @ts-ignore
           }, this.intervalTime);
@@ -87,7 +90,10 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
 
   async loadModel() {
     /*this.model = await tf.loadLayersModel('/assets/model/lsp_model/model.json');*/
-    this.model = await tf.loadGraphModel('assets/lsp_saved/model.json')
+    /*
+        this.model = await tf.loadGraphModel('assets/lsp_saved/model.json')
+    */
+    this.model = await tf.loadLayersModel('assets/model/lsp_2_final/model.json');
 
     /*this.model = await tf.loadLayersModel('/assets/model/model.json');*/
     const model = handpose.SupportedModels.MediaPipeHands;
@@ -106,42 +112,53 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
 
       if (predictions && predictions.length > 0) {
         const handLandmarks = predictions[0].keypoints;
-        this.drawHand(ctx, handLandmarks)
 
         const minX = Math.min(...handLandmarks.map(point => point.x));
         const minY = Math.min(...handLandmarks.map(point => point.y));
         const maxX = Math.max(...handLandmarks.map(point => point.x));
         const maxY = Math.max(...handLandmarks.map(point => point.y));
 
-        const inputData = tf.browser.fromPixels(this.video);
 
         const normalizedCoords = [
-          (minY - 40) / this.video.height,
-          (minX - 40) / this.video.width,
-          (maxY + 80) / this.video.height,
-          (maxX + 80) / this.video.width
+          ((minY) / this.video.height) - 0.04,
+          ((minX) / this.video.width) - 0.04,
+          ((maxY) / this.video.height) + 0.04,
+          ((maxX) / this.video.width) + 0.04
         ];
-        //check if model is of type tf.LayersModel
-        if (this.model instanceof tf.LayersModel) {
+
+        let minXImg = (((minX) / this.video.width) - 0.04) * this.video.width;
+        let minYImg = (((minY) / this.video.height) - 0.04) * this.video.height;
+        let maxXImg = (((maxX) / this.video.width) + 0.04) * this.video.width;
+        let maxYImg = (((maxY) / this.video.height) + 0.04) * this.video.height;
+        // get the pixels within the bounding box
+
+        const inputData = tf.browser.fromPixels(this.video);
+        const batchedInputData = tf.expandDims(inputData, 0);
+
+        // get the pixels within the bounding box
+        const boxes = tf.tensor2d([normalizedCoords]);
+        const boxInd = tf.tensor1d([0]);
+        const boxIndInt32 = tf.cast(boxInd, 'int32');
+
+
+        const croppedImage = tf.image.cropAndResize(
           // @ts-ignore
-          this.currentHandFrame = tf.image.cropAndResize(
-            // @ts-ignore
-            inputData.expandDims(),
-            [normalizedCoords],
-            [0],
-            [64, 64]
-          ).reshape([1, 64, 64, 3]);
-        } else {
-          //For the GraphModel only
-          // @ts-ignore
-          this.currentHandFrame = tf.image.cropAndResize(
-            // @ts-ignore
-            inputData.expandDims(),
-            [normalizedCoords],
-            [0],
-            [224, 224] // Change this line
-          ).reshape([1, 224, 224, 3]); // And this line
-        }
+          batchedInputData,
+          boxes,
+          boxIndInt32,
+          [224, 224]
+        );
+        console.log(croppedImage)
+        this.currentHandFrame = croppedImage;
+        this.currentHandFrame = this.currentHandFrame.div(255);
+
+        this.drawHand(ctx, handLandmarks)
+        ctx.strokeStyle = 'red';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(minXImg, minYImg, (maxXImg - minXImg), (maxYImg - minYImg));
+
+
+
       } else {
         console.log('No se detectó la mano en el frame actual.');
       }
@@ -150,31 +167,42 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
     }
   }
 
-  detectHandFrame() {
-    if (this.currentHandFrame) {
-      // show current frame
-      console.log(this.currentHandFrame)
-/*
-      this.currentHandFrame.print()
-*/
-      // Call the function with your tensor
-      const tensor = tf.tensor4d([
-        [
-          [
-            [92.3592453, 84.3592453, 93.3822556],
-            [93.3175278, 85.3175278, 94.6350632],
-            // ... rest of your tensor values
-          ]
-        ]
-      ]);
-      //this.showTensorAsImage(tensor);
+  predictTestImage() {
+    let img = new Image();
+    img.src = 'assets/img/test/a_1.jpg';
+    img.onload = () => {
+      console.info('[PREDICTING TEST IMAGE]')
+      console.log(img.width, img.height)
+      let a = tf.browser.fromPixels(img);
+      console.log(a.shape)
+      a = tf.expandDims(a, 0);
+      a = a.div(255);
+      const prediction = this.model.predict(a);
+      // @ts-ignore
+      console.log(prediction.dataSync())
+    }
+  }
 
+  detectHandFrame(ctx: CanvasRenderingContext2D) {
+    if (this.currentHandFrame) {
+
+      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+/*
+      this.predictTestImage()
+*/
+
+      console.log(this.currentHandFrame)
       const prediction = this.model.predict(this.currentHandFrame);
 
-      const characters = [
+
+      let characters = [
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
         'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '', '', ' '
       ];
+
+      characters = [
+        'A', 'B', 'C', 'E', 'H', 'I', 'L', 'O', 'S', 'V'
+      ]
       // @ts-ignore
       const predictedClass = tf.argMax(prediction, 1).dataSync()[0];
       const predictedLabel = characters[predictedClass];
@@ -183,6 +211,11 @@ export class CamDetectorComponent implements OnInit, OnDestroy {
       console.log("Label predicho:", predictedLabel);
 
       console.log(prediction);
+
+      // write the predicted label on the canvas
+      ctx.font = '48px sans-serif';
+      ctx.fillStyle = 'yellow';
+      ctx.fillText(predictedLabel, 10, 50);
 
 
       this.onCharDetected.emit(predictedLabel);

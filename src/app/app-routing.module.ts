@@ -12,7 +12,9 @@ const routes: Routes = [
         path: '',
         pathMatch: 'full',
         redirectTo: 'tools',
+/*
         canMatch: [authGuard]
+*/
       },
       {
         path: '',
@@ -27,7 +29,9 @@ const routes: Routes = [
       {
         path: 'tools',
         loadChildren: () => import('./features/tools/tools.module').then(m => m.ToolsModule),
+/*
         canMatch: [authGuard],
+*/
       }
     ]
   }
